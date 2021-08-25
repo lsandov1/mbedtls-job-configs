@@ -1,0 +1,65 @@
+- job:
+    name: lsandov1-mbed-tls-pr-ci-testing
+    description: 'mbedtls CI testing job'
+    project-type: multibranch
+    prune-dead-branches: true
+    script-path: tests/.jenkins/Jenkinsfile
+    properties:
+      - raw:
+          xml: |
+            <org.jenkinsci.plugins.workflow.libs.FolderLibraries plugin="workflow-cps-global-lib@2.9">
+              <libraries>
+                <org.jenkinsci.plugins.workflow.libs.LibraryConfiguration>
+                  <name>mbedtls-test</name>
+                  <retriever class="org.jenkinsci.plugins.workflow.libs.SCMSourceRetriever">
+                    <scm class="org.jenkinsci.plugins.github_branch_source.GitHubSCMSource" plugin="github-branch-source@2.9.1">
+                      <id>37889fee-3fa8-4469-a8c8-8e4b8a52ad06</id>
+                      <apiUri>https://api.github.com</apiUri>
+                      <credentialsId>lsandov1-username-github-token</credentialsId>
+                      <repoOwner>lsandov1</repoOwner>
+                      <repository>mbedtls-test</repository>
+                      <repositoryUrl>https://github.com/lsandov1/mbedtls-test</repositoryUrl>
+                      <traits>
+                        <org.jenkinsci.plugins.github__branch__source.BranchDiscoveryTrait>
+                          <strategyId>1</strategyId>
+                        </org.jenkinsci.plugins.github__branch__source.BranchDiscoveryTrait>
+                        <org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait>
+                          <strategyId>2</strategyId>
+                        </org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait>
+                        <org.jenkinsci.plugins.github__branch__source.ForkPullRequestDiscoveryTrait>
+                          <strategyId>2</strategyId>
+                          <trust class="org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait$TrustPermission"/>
+                        </org.jenkinsci.plugins.github__branch__source.ForkPullRequestDiscoveryTrait>
+                        <org.jenkinsci.plugins.github__branch__source.SSHCheckoutTrait>
+                          <credentialsId>lsandov1-github-ssh</credentialsId>
+                        </org.jenkinsci.plugins.github__branch__source.SSHCheckoutTrait>
+                      </traits>
+                    </scm>
+                  </retriever>
+                  <defaultVersion>master</defaultVersion>
+                  <implicit>true</implicit>
+                  <allowVersionOverride>true</allowVersionOverride>
+                  <includeInChangesets>true</includeInChangesets>
+                </org.jenkinsci.plugins.workflow.libs.LibraryConfiguration>
+              </libraries>
+            </org.jenkinsci.plugins.workflow.libs.FolderLibraries>
+    scm:
+    - github:
+        api-uri: https://api.github.com
+        credentials-id: lsandov1-username-github-token
+        repo-owner: lsandov1
+        repo: mbedtls-restricted
+        repository-url: https://github.com/lsandov1/mbedtls-restricted.git
+        branch-discovery: no-pr
+        discover-pr-origin: both
+        head-filter-regex: '(.*ci-testing.*|PR-(631|653|663|758|759)-.*)'
+        property-strategies:
+            all-branches:
+                - suppress-scm-triggering: true
+        submodule:
+          disable: false
+          recursive: true
+          tracking: false
+          parent-credentials: false
+        ssh-checkout:
+          credentials: lsandov1-github-ssh

@@ -1,0 +1,122 @@
+- job:
+    concurrent: true
+    description: Dockerfile building job.
+    disabled: false
+    dsl: |-
+      timestamps {
+          stage('build-dockerfiles') {
+              node('dockerfile-builder') {
+                  dir('src') {
+                      deleteDir()
+                      checkout([
+                          scm: [
+                              $class: 'GitSCM',
+                              userRemoteConfigs: [
+                                  [url: MBED_TLS_TEST_REPO, credentialsId: env.GIT_CREDENTIALS_ID]
+                              ],
+                              branches: [[name: MBED_TLS_TEST_BRANCH]],
+                              extensions: [
+                                  [$class: 'CloneOption', timeout: 60],
+                                  [$class: 'SubmoduleOption', recursiveSubmodules: true],
+                                  [$class: 'LocalBranch', localBranch: MBED_TLS_TEST_BRANCH],
+                              ],
+                          ]
+                      ])
+                      dir('dev_envs') {
+                          dir('docker_files') {
+                              if (BUILD_16_04_DOCKERFILE == "true") {
+                                  dir('ubuntu-16.04') {
+                                      sh """\
+      \$(aws ecr get-login) && docker pull 666618195821.dkr.ecr.eu-west-1.amazonaws.com/jenkins-mbedtls:ubuntu-16.04
+      \$(aws ecr get-login) && docker build -t jenkins-mbedtls:${TAG_FOR_16_04_DOCKERFILE} .
+      docker tag jenkins-mbedtls:${TAG_FOR_16_04_DOCKERFILE} 666618195821.dkr.ecr.eu-west-1.amazonaws.com/jenkins-mbedtls:${TAG_FOR_16_04_DOCKERFILE}
+      \$(aws ecr get-login) && docker push 666618195821.dkr.ecr.eu-west-1.amazonaws.com/jenkins-mbedtls:${TAG_FOR_16_04_DOCKERFILE}
+      """
+                                  }
+                              }
+                              if (BUILD_18_04_DOCKERFILE == "true") {
+                                  dir('ubuntu-18.04') {
+                                      sh """\
+      \$(aws ecr get-login) && docker pull 666618195821.dkr.ecr.eu-west-1.amazonaws.com/jenkins-mbedtls:ubuntu-18.04
+      \$(aws ecr get-login) && docker build -t jenkins-mbedtls:${TAG_FOR_18_04_DOCKERFILE} .
+      docker tag jenkins-mbedtls:${TAG_FOR_18_04_DOCKERFILE} 666618195821.dkr.ecr.eu-west-1.amazonaws.com/jenkins-mbedtls:${TAG_FOR_18_04_DOCKERFILE}
+      \$(aws ecr get-login) && docker push 666618195821.dkr.ecr.eu-west-1.amazonaws.com/jenkins-mbedtls:${TAG_FOR_18_04_DOCKERFILE}
+      """
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+    name: dockerfile-builder
+    parameters:
+    - string:
+        default: git@github.com:ARMmbed/mbedtls-test.git
+        description: Enter mbed TLS test repo/fork
+        name: MBED_TLS_TEST_REPO
+        trim: 'false'
+    - string:
+        default: master
+        description: Enter branch or commit to build dockerfile from
+        name: MBED_TLS_TEST_BRANCH
+        trim: 'false'
+    - bool:
+        default: false
+        description: Build the Ubuntu 16.04 Docker image
+        name: BUILD_16_04_DOCKERFILE
+    - string:
+        default: ubuntu-16.04-testing
+        description: Enter tag for Ubuntu 16.04 Docker image being built
+        name: TAG_FOR_16_04_DOCKERFILE
+        trim: 'false'
+    - bool:
+        default: false
+        description: Build the Ubuntu 18.04 Docker image
+        name: BUILD_18_04_DOCKERFILE
+    - string:
+        default: ubuntu-18.04-testing
+        description: Enter tag for Ubuntu 18.04 Docker image being built
+        name: TAG_FOR_18_04_DOCKERFILE
+        trim: 'false'
+    project-type: pipeline
+    properties:
+    - build-blocker:
+        block-level: GLOBAL
+        blocking-jobs: []
+        queue-scanning: DISABLED
+        use-build-blocker: false
+    - build-discarder:
+        artifact-days-to-keep: -1
+        artifact-num-to-keep: -1
+        days-to-keep: 60
+        num-to-keep: 100
+    - raw:
+        xml: !!binary |
+          PGNvbS5zb255ZXJpY3Nzb24uamVua2lucy5wbHVnaW5zLmJmYS5tb2RlbC5TY2FubmVySm9iUHJv
+          cGVydHkgcGx1Z2luPSJidWlsZC1mYWlsdXJlLWFuYWx5emVyQDEuMjIuMCI+CiAgICAgIDxkb05v
+          dFNjYW4+ZmFsc2U8L2RvTm90U2Nhbj4KICAgIDwvY29tLnNvbnllcmljc3Nvbi5qZW5raW5zLnBs
+          dWdpbnMuYmZhLm1vZGVsLlNjYW5uZXJKb2JQcm9wZXJ0eT4KICAgIA==
+    - raw:
+        xml: !!binary |
+          PG9yZy5qZW5raW5zY2kucGx1Z2lucy53b3JrZmxvdy5qb2IucHJvcGVydGllcy5EaXNhYmxlUmVz
+          dW1lSm9iUHJvcGVydHkgLz4KICAgIA==
+    - github:
+        url: https://github.com/ARMmbed/mbedtls-test/
+    - raw:
+        xml: !!binary |
+          PG9yZy5qZW5raW5zY2kucGx1Z2lucy52aWN0b3JvcHMuVmljdG9yT3BzTm90aWZpZXJfLVZpY3Rv
+          ck9wc0pvYlByb3BlcnR5IHBsdWdpbj0idmljdG9yb3BzQDAuMSI+CiAgICAgIDxyb3V0aW5nS2V5
+          IC8+CiAgICAgIDxub3RpZnlTdWNjZXNzPnRydWU8L25vdGlmeVN1Y2Nlc3M+CiAgICAgIDxub3Rp
+          ZnlGYWlsdXJlPnRydWU8L25vdGlmeUZhaWx1cmU+CiAgICA8L29yZy5qZW5raW5zY2kucGx1Z2lu
+          cy52aWN0b3JvcHMuVmljdG9yT3BzTm90aWZpZXJfLVZpY3Rvck9wc0pvYlByb3BlcnR5PgogICAg
+    - inject:
+        enabled: true
+        keep-build-variables: true
+        keep-system-variables: true
+        load-from-master: false
+        override-build-parameters: false
+        properties-content: GIT_CREDENTIALS_ID= d015f9b1-4800-4a81-86b3-9dbadc18ee00
+    sandbox: true
+    triggers: []

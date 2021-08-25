@@ -1,0 +1,34 @@
+- job:
+    concurrent: true
+    description: |-
+      This job exists to schedule the nightly repository scans.
+      There appears to be an issue with automatically scanning if there are more than one multibranch pipelines on the same repo.
+    disabled: false
+    dsl: |-
+      build job: "mbed-tls-pr-merge", wait: false, propagate: false
+      build job: "mbed-tls-pr-head", wait: false, propagate: false
+      build job: "mbed-tls-restricted-pr", wait: false, propagate: false
+    name: repo-scan-scheduler
+    project-type: pipeline
+    properties:
+    - build-blocker:
+        block-level: GLOBAL
+        blocking-jobs: []
+        queue-scanning: DISABLED
+        use-build-blocker: false
+    - raw:
+        xml: !!binary |
+          PGNvbS5zb255ZXJpY3Nzb24uamVua2lucy5wbHVnaW5zLmJmYS5tb2RlbC5TY2FubmVySm9iUHJv
+          cGVydHkgcGx1Z2luPSJidWlsZC1mYWlsdXJlLWFuYWx5emVyQDEuMjIuMCI+CiAgICAgIDxkb05v
+          dFNjYW4+ZmFsc2U8L2RvTm90U2Nhbj4KICAgIDwvY29tLnNvbnllcmljc3Nvbi5qZW5raW5zLnBs
+          dWdpbnMuYmZhLm1vZGVsLlNjYW5uZXJKb2JQcm9wZXJ0eT4KICAgIA==
+    - raw:
+        xml: !!binary |
+          PG9yZy5qZW5raW5zY2kucGx1Z2lucy52aWN0b3JvcHMuVmljdG9yT3BzTm90aWZpZXJfLVZpY3Rv
+          ck9wc0pvYlByb3BlcnR5IHBsdWdpbj0idmljdG9yb3BzQDAuMSI+CiAgICAgIDxyb3V0aW5nS2V5
+          IC8+CiAgICAgIDxub3RpZnlTdWNjZXNzPnRydWU8L25vdGlmeVN1Y2Nlc3M+CiAgICAgIDxub3Rp
+          ZnlGYWlsdXJlPnRydWU8L25vdGlmeUZhaWx1cmU+CiAgICA8L29yZy5qZW5raW5zY2kucGx1Z2lu
+          cy52aWN0b3JvcHMuVmljdG9yT3BzTm90aWZpZXJfLVZpY3Rvck9wc0pvYlByb3BlcnR5PgogICAg
+    sandbox: true
+    triggers:
+    - timed: 0 21 * * *

@@ -1,0 +1,174 @@
+- job:
+    concurrent: true
+    description: Mbed TLS Release job (new)
+    disabled: false
+    name: mbedtls-release-ci-testing
+    parameters:
+    - string:
+        default: git@github.com:ARMmbed/mbedtls.git
+        description: Enter mbed TLS repo/fork
+        name: MBED_TLS_REPO
+        trim: 'true'
+    - string:
+        default: development
+        description: Enter branch or commit to test
+        name: MBED_TLS_BRANCH
+        trim: 'true'
+    - bool:
+        default: false
+        description: Run basic-build-test.sh (test coverage measurement)
+        name: RUN_BASIC_BUILD_TEST
+    - bool:
+        default: false
+        description: Run all.sh on Linux
+        name: RUN_ALL_SH
+    - bool:
+        default: false
+        description: Run a selection of all.sh on FreeBSD
+        name: RUN_FREEBSD
+    - bool:
+        default: false
+        description: Run Windows tests
+        name: RUN_WINDOWS_TEST
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS authcrypt
+          example.
+        name: TEST_MBED_OS_AUTHCRYPT_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS benchmark
+          example.
+        name: TEST_MBED_OS_BENCHMARK_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS hashing
+          example.
+        name: TEST_MBED_OS_HASHING_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS tls-client
+          example.
+        name: TEST_MBED_OS_TLS_CLIENT_EXAMPLE
+    - string:
+        default: ''
+        description: |-
+          Enter Mbed Crypto repo/fork. Note this *ONLY* influences the Mbed OS tests at this time.
+
+          Optional - if omitted will use what's embedded in the Mbed TLS submodule.
+        name: MBED_CRYPTO_REPO
+        trim: 'true'
+    - string:
+        default: ''
+        description: |-
+          Enter Mbed Crypto branch. Note this *ONLY* influences the Mbed OS tests at this time.
+
+          Optional - if omitted will use what's embedded in the Mbed TLS submodule.
+        name: MBED_CRYPTO_BRANCH
+        trim: 'true'
+    - string:
+        default: git@github.com:ARMmbed/mbed-os.git
+        description: Enter the Mbed OS repo or fork
+        name: MBED_OS_REPO
+        trim: 'true'
+    - string:
+        default: master
+        description: |-
+          Enter branch or commit to test.
+
+          By default we test with the HEAD of the master branch, which is NOT a fixed release.
+        name: MBED_OS_BRANCH
+        trim: 'true'
+    - string:
+        default: git@github.com:ARMmbed/mbed-os-example-tls.git
+        description: |-
+          Enter the Mbed OS examples repo or fork.
+
+          This defaults to the main repository the examples are held in.
+        name: MBED_OS_TLS_EXAMPLES_REPO
+        trim: 'true'
+    - string:
+        default: master
+        description: |-
+          Enter branch or commit to test.
+
+          This defaults to the HEAD of the master branch.
+        name: MBED_OS_TLS_EXAMPLES_BRANCH
+        trim: 'true'
+    - choice:
+        choices:
+        - Pull Request
+        - Mbed OS Gold Boards
+        - Mbed OS Silver Boards
+        - Mbed OS Gold Boards + Mbed OS Silver Boards
+        description: |-
+          Pull Request - Boards tested in the Pull Request job<br>
+
+          For the list of Mbed OS Gold and Silver boards, see <a href="https://confluence.arm.com/display/IoTBU/ISG+Device+SW+SUT+list">here</a>
+        name: PLATFORMS_TO_TEST
+    - raw:
+        xml: !!binary |
+          PG5ldC51YXpuaWEubHVrYW51cy5odWRzb24ucGx1Z2lucy5naXRwYXJhbWV0ZXIuR2l0UGFyYW1l
+          dGVyRGVmaW5pdGlvbiBwbHVnaW49ImdpdC1wYXJhbWV0ZXJAMC45LjMiPgogICAgICAgICAgPG5h
+          bWU+VEVTVF9CUkFOQ0g8L25hbWU+CiAgICAgICAgICA8ZGVzY3JpcHRpb24+QnJhbmNoIG9yIHRh
+          ZyBpbiBodHRwczovL2dpdGh1Yi5jb20vQVJNbWJlZC9tYmVkdGxzLXRlc3QgKGZvcmtzIGFyZSBu
+          b3Qgc3VwcG9ydGVkKTwvZGVzY3JpcHRpb24+CiAgICAgICAgICA8dXVpZD43YjRiNGMwYy03MTY5
+          LTRkMWYtYmFjNC1mMjI1NWM0ZDMxODg8L3V1aWQ+CiAgICAgICAgICA8dHlwZT5QVF9CUkFOQ0hf
+          VEFHPC90eXBlPgogICAgICAgICAgPGJyYW5jaCAvPgogICAgICAgICAgPHRhZ0ZpbHRlcj4qPC90
+          YWdGaWx0ZXI+CiAgICAgICAgICA8YnJhbmNoRmlsdGVyPi4qPC9icmFuY2hGaWx0ZXI+CiAgICAg
+          ICAgICA8c29ydE1vZGU+Tk9ORTwvc29ydE1vZGU+CiAgICAgICAgICA8ZGVmYXVsdFZhbHVlIC8+
+          CiAgICAgICAgICA8c2VsZWN0ZWRWYWx1ZT5OT05FPC9zZWxlY3RlZFZhbHVlPgogICAgICAgICAg
+          PHF1aWNrRmlsdGVyRW5hYmxlZD50cnVlPC9xdWlja0ZpbHRlckVuYWJsZWQ+CiAgICAgICAgICA8
+          bGlzdFNpemU+NTwvbGlzdFNpemU+CiAgICAgICAgPC9uZXQudWF6bmlhLmx1a2FudXMuaHVkc29u
+          LnBsdWdpbnMuZ2l0cGFyYW1ldGVyLkdpdFBhcmFtZXRlckRlZmluaXRpb24+CiAgICAgIA==
+    pipeline-scm:
+      lightweight-checkout: false
+      scm:
+      - git:
+          branches:
+          - ${TEST_BRANCH}
+          credentials-id: 742b7080-e1cc-41c6-bf55-efb72013bc28
+          url: git@github.com:ARMmbed/mbedtls-test.git
+      script-path: vars/mbedtls-release-Jenkinsfile
+    project-type: pipeline
+    properties:
+    - build-blocker:
+        block-level: GLOBAL
+        blocking-jobs: []
+        queue-scanning: DISABLED
+        use-build-blocker: false
+    - build-discarder:
+        artifact-days-to-keep: -1
+        artifact-num-to-keep: -1
+        days-to-keep: 60
+        num-to-keep: 30
+    - raw:
+        xml: !!binary |
+          PGNvbS5zb255ZXJpY3Nzb24uamVua2lucy5wbHVnaW5zLmJmYS5tb2RlbC5TY2FubmVySm9iUHJv
+          cGVydHkgcGx1Z2luPSJidWlsZC1mYWlsdXJlLWFuYWx5emVyQDEuMjIuMCI+CiAgICAgIDxkb05v
+          dFNjYW4+ZmFsc2U8L2RvTm90U2Nhbj4KICAgIDwvY29tLnNvbnllcmljc3Nvbi5qZW5raW5zLnBs
+          dWdpbnMuYmZhLm1vZGVsLlNjYW5uZXJKb2JQcm9wZXJ0eT4KICAgIA==
+    - raw:
+        xml: !!binary |
+          PG9yZy5qZW5raW5zY2kucGx1Z2lucy53b3JrZmxvdy5qb2IucHJvcGVydGllcy5EaXNhYmxlUmVz
+          dW1lSm9iUHJvcGVydHkgLz4KICAgIA==
+    - github:
+        url: https://github.com/ARMmbed/mbedtls/
+    - raw:
+        xml: !!binary |
+          PG9yZy5qZW5raW5zY2kucGx1Z2lucy52aWN0b3JvcHMuVmljdG9yT3BzTm90aWZpZXJfLVZpY3Rv
+          ck9wc0pvYlByb3BlcnR5IHBsdWdpbj0idmljdG9yb3BzQDAuMSI+CiAgICAgIDxyb3V0aW5nS2V5
+          IC8+CiAgICAgIDxub3RpZnlTdWNjZXNzPnRydWU8L25vdGlmeVN1Y2Nlc3M+CiAgICAgIDxub3Rp
+          ZnlGYWlsdXJlPnRydWU8L25vdGlmeUZhaWx1cmU+CiAgICA8L29yZy5qZW5raW5zY2kucGx1Z2lu
+          cy52aWN0b3JvcHMuVmljdG9yT3BzTm90aWZpZXJfLVZpY3Rvck9wc0pvYlByb3BlcnR5PgogICAg
+    - inject:
+        enabled: true
+        keep-build-variables: true
+        keep-system-variables: true
+        load-from-master: false
+        override-build-parameters: false
+        properties-content: |-
+          GIT_CREDENTIALS_ID= d015f9b1-4800-4a81-86b3-9dbadc18ee00
+          TEST_PASS_EMAIL_ADDRESS=darryl.green@arm.com
+          TEST_FAIL_EMAIL_ADDRESS=darryl.green@arm.com
+    triggers: []

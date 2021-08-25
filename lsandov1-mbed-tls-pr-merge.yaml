@@ -1,0 +1,54 @@
+- job:
+    name: lsandov1-mbed-tls-pr-merge
+    description: 'Job for testing PRs merged with the target branch head'
+    project-type: multibranch
+    prune-dead-branches: true
+    script-path: tests/.jenkins/Jenkinsfile
+    properties:
+      - raw:
+          xml: |
+            <org.jenkinsci.plugins.workflow.libs.FolderLibraries plugin="workflow-cps-global-lib@2.9">
+              <libraries>
+                <org.jenkinsci.plugins.workflow.libs.LibraryConfiguration>
+                  <name>mbedtls-test</name>
+                  <retriever class="org.jenkinsci.plugins.workflow.libs.SCMSourceRetriever">
+                    <scm class="org.jenkinsci.plugins.github_branch_source.GitHubSCMSource" plugin="github-branch-source@2.9.1">
+                      <id>640a3c19-54ab-467e-8381-a2ef9f3896f4</id>
+                      <apiUri>https://api.github.com</apiUri>
+                      <credentialsId>lsandov1-username-github-token</credentialsId>
+                      <repoOwner>lsandov1</repoOwner>
+                      <repository>mbedtls-test</repository>
+                      <repositoryUrl>https://github.com/lsandov1/mbedtls-test</repositoryUrl>
+                      <traits>
+                        <org.jenkinsci.plugins.github__branch__source.SSHCheckoutTrait>
+                          <credentialsId>lsandov1-github-ssh</credentialsId>
+                        </org.jenkinsci.plugins.github__branch__source.SSHCheckoutTrait>
+                      </traits>
+                    </scm>
+                  </retriever>
+                  <defaultVersion>master</defaultVersion>
+                  <implicit>true</implicit>
+                  <allowVersionOverride>true</allowVersionOverride>
+                  <includeInChangesets>true</includeInChangesets>
+                </org.jenkinsci.plugins.workflow.libs.LibraryConfiguration>
+              </libraries>
+            </org.jenkinsci.plugins.workflow.libs.FolderLibraries>
+    scm:
+    - github:
+        api-uri: https://api.github.com
+        credentials-id: lsandov1-username-github-token
+        repo-owner: lsandov1
+        repo: mbedtls
+        repository-url: https://github.com/lsandov1/mbedtls.git
+        branch-discovery: no-pr
+        discover-pr-forks-strategy: both
+        discover-pr-forks-trust: permission
+        discover-pr-origin: both
+        head-filter-regex: '(?!^PR-(1824)-(merge|head)$)(PR-\d+-merge)'
+        submodule:
+          disable: false
+          recursive: true
+          tracking: false
+          parent-credentials: false
+        ssh-checkout:
+          credentials: lsandov1-github-ssh

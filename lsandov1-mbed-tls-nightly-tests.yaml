@@ -1,0 +1,122 @@
+- job:
+    concurrent: true
+    description: Mbed TLS Nightly Tests
+    disabled: false
+    name: lsandov1-mbed-tls-nightly-tests
+    parameters:
+    - string:
+        default: https://github.com/lsandov1/mbedtls.git
+        description: Enter mbed TLS repo/fork
+        name: MBED_TLS_REPO
+        trim: 'false'
+    - string:
+        default: development
+        description: Enter branch or commit to test
+        name: MBED_TLS_BRANCH
+        trim: 'false'
+    - bool:
+        default: true
+        description: |-
+          Run basic-build-test.sh
+
+          (Note, this does not work on mbedtls-2.1).
+        name: RUN_BASIC_BUILD_TEST
+    - bool:
+        default: true
+        description: Run all.sh
+        name: RUN_ALL_SH
+    - bool:
+        default: true
+        description: Run Windows tests
+        name: RUN_WINDOWS_TEST
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS authcrypt
+          example.
+        name: TEST_MBED_OS_AUTHCRYPT_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS benchmark
+          example.
+        name: TEST_MBED_OS_BENCHMARK_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS hashing
+          example.
+        name: TEST_MBED_OS_HASHING_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS tls-client
+          example.
+        name: TEST_MBED_OS_TLS_CLIENT_EXAMPLE
+    - string:
+        default: https://github.com/lsandov1/mbed-os.git
+        description: Enter the Mbed OS repo or fork
+        name: MBED_OS_REPO
+        trim: 'false'
+    - string:
+        default: master
+        description: |-
+          Enter branch or commit to test.
+
+          By default we test with the HEAD of the master branch, which is NOT a fixed release.
+        name: MBED_OS_BRANCH
+        trim: 'false'
+    - string:
+        default: https://github.com/lsandov1/mbed-os-example-tls.git
+        description: |-
+          Enter the Mbed OS examples repo or fork.
+
+          This defaults to the main repository the examples are held in.
+        name: MBED_OS_TLS_EXAMPLES_REPO
+        trim: 'false'
+    - string:
+        default: master
+        description: |-
+          Enter branch or commit to test.
+
+          This defaults to the HEAD of the master branch.
+        name: MBED_OS_TLS_EXAMPLES_BRANCH
+        trim: 'false'
+    - choice:
+        choices:
+        - Pull Request
+        - Mbed OS Gold Boards
+        - Mbed OS Silver Boards
+        - Mbed OS Gold Boards + Mbed OS Silver Boards
+        description: |-
+          Pull Request - Boards tested in the Pull Request job<br>
+
+          For the list of Mbed OS Gold and Silver boards, see <a href="https://confluence.arm.com/display/IoTBU/ISG+Device+SW+SUT+list">here</a>
+        name: PLATFORMS_TO_TEST
+    - string:
+        default: leonardo.sandoval@linaro.org
+        description: ''
+        name: TEST_PASS_EMAIL_ADDRESS
+        trim: 'false'
+    - string:
+        default: leonardo.sandoval@linaro.org
+        description: ''
+        name: TEST_FAIL_EMAIL_ADDRESS
+        trim: 'false'
+    pipeline-scm:
+      lightweight-checkout: true
+      scm:
+      - git:
+          branches:
+          - '*/master'
+          credentials-id: lsandov1-username-github-token
+          url: https://github.com/lsandov1/mbedtls-test.git
+      script-path: vars/mbedtls-release-Jenkinsfile
+    project-type: pipeline
+    properties:
+    - build-blocker:
+        block-level: GLOBAL
+        blocking-jobs: []
+        queue-scanning: DISABLED
+        use-build-blocker: false
+    - build-discarder:
+        artifact-days-to-keep: -1
+        artifact-num-to-keep: -1
+        days-to-keep: 60
+        num-to-keep: 100
