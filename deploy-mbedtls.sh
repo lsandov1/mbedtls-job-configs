@@ -7,6 +7,7 @@ yamls=( \
         lsandov1-mbed-tls-nightly-tests.yaml \
         lsandov1-mbed-tls-pr-ci-testing.yaml \
 	lsandov1-mbedtls-pr-multibranch.yaml \
+	lsandov1-mbed-tls-pr-test-parametrized.yaml \
     )
 
 # migrate jobs

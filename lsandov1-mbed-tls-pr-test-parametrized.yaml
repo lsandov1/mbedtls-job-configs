@@ -1,0 +1,137 @@
+- job:
+    concurrent: true
+    description: Mbed TLS parametrized test PR job
+    disabled: false
+    name: lasndov1-mbed-tls-pr-test-parametrized
+    parameters:
+    - string:
+        default: development
+        description: Set this to the branch you would be targeting for a PR
+        name: CHANGE_TARGET
+        trim: 'false'
+    - string:
+        default: https://github.com/lsandov1/mbedtls-restricted.git
+        description: Enter mbed TLS repo/fork
+        name: MBED_TLS_REPO
+        trim: 'false'
+    - string:
+        default: development-restricted
+        description: Enter branch or commit to test
+        name: MBED_TLS_BRANCH
+        trim: 'false'
+    - string:
+        default: ''
+        description: |-
+          Enter Mbed Crypto repo/fork. Note this *ONLY* influences the Mbed OS tests at this time.
+
+          Optional - if omitted will use what's embedded in the Mbed TLS submodule.
+        name: MBED_CRYPTO_REPO
+        trim: 'false'
+    - string:
+        default: ''
+        description: |-
+          Enter Mbed Crypto branch. Note this *ONLY* influences the Mbed OS tests at this time.
+
+          Optional - if omitted will use what's embedded in the Mbed TLS submodule.
+        name: MBED_CRYPTO_BRANCH
+        trim: 'false'
+    - string:
+        default: https://github.com/lsandov1/mbed-os.git
+        description: Enter the Mbed OS repo or fork
+        name: MBED_OS_REPO
+        trim: 'false'
+    - string:
+        default: master
+        description: |-
+          Enter branch or commit to test.
+
+          By default we test with the HEAD of the master branch, which is NOT a fixed release.
+        name: MBED_OS_BRANCH
+        trim: 'false'
+    - string:
+        default: https://github.com/lsandov1/mbed-os-example-tls.git
+        description: |-
+          Enter the Mbed OS examples repo or fork.
+
+          This defaults to the main repository the examples are held in.
+        name: MBED_OS_TLS_EXAMPLES_REPO
+        trim: 'false'
+    - string:
+        default: master
+        description: |-
+          Enter branch or commit to test.
+
+          This defaults to the HEAD of the master branch.
+        name: MBED_OS_TLS_EXAMPLES_BRANCH
+        trim: 'false'
+    - bool:
+        default: false
+        description: Run the basic linux PR job scripts.
+        name: RUN_LINUX_SCRIPTS
+    - bool:
+        default: false
+        description: Run the baseic FreeBSD PR job scripts
+        name: RUN_FREEBSD
+    - bool:
+        default: false
+        description: Run Windows tests
+        name: RUN_WINDOWS_TEST
+    - bool:
+        default: false
+        description: Run all.sh tests
+        name: RUN_ALL_SH
+    - bool:
+        default: false
+        description: Run the ABI checking test
+        name: RUN_ABI_CHECK
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS authcrypt
+          example.
+        name: TEST_MBED_OS_AUTHCRYPT_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS benchmark
+          example.
+        name: TEST_MBED_OS_BENCHMARK_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS hashing
+          example.
+        name: TEST_MBED_OS_HASHING_EXAMPLE
+    - bool:
+        default: false
+        description: Import mbed TLS into mbed-os master and test mbed TLS tls-client
+          example.
+        name: TEST_MBED_OS_TLS_CLIENT_EXAMPLE
+    pipeline-scm:
+      lightweight-checkout: false
+      scm:
+      - git:
+          branches:
+          - ${TEST_BRANCH}
+          credentials-id: lsandov1-github-mbedtls-test-token
+          url: https://github.com/lsandov1/mbedtls-test.git
+      script-path: vars/mbedtls-pr-test-Jenkinsfile
+    project-type: pipeline
+    properties:
+    - build-blocker:
+        block-level: GLOBAL
+        blocking-jobs: []
+        queue-scanning: DISABLED
+        use-build-blocker: false
+    - build-discarder:
+        artifact-days-to-keep: -1
+        artifact-num-to-keep: -1
+        days-to-keep: 60
+        num-to-keep: 100
+    - github:
+        url: https://github.com/lsandov1/mbedtls/
+    - inject:
+        enabled: true
+        keep-build-variables: true
+        keep-system-variables: true
+        load-from-master: false
+        override-build-parameters: false
+        properties-content: GIT_CREDENTIALS_ID=lsandov1-github-mbedtls-token
+    triggers: []
