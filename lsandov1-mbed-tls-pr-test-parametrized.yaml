@@ -2,7 +2,7 @@
     concurrent: true
     description: Mbed TLS parametrized test PR job
     disabled: false
-    name: lasndov1-mbed-tls-pr-test-parametrized
+    name: lsandov1-mbed-tls-pr-test-parametrized
     parameters:
     - string:
         default: development
