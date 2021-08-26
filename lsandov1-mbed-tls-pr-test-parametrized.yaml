@@ -104,6 +104,10 @@
         description: Import mbed TLS into mbed-os master and test mbed TLS tls-client
           example.
         name: TEST_MBED_OS_TLS_CLIENT_EXAMPLE
+    - git-parameter:
+        name: TEST_BRANCH
+        description: Branch or tag in https://github.com/ARMmbed/mbedtls-test (forks are not supported)
+        type: PT_BRANCH_TAG
     pipeline-scm:
       lightweight-checkout: false
       scm:
