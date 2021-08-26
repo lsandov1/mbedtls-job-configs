@@ -1,7 +1,7 @@
 - job:
     concurrent: true
     description: Mbed TLS Nightly Tests
-    disabled: false
+    disabled: true
     name: lsandov1-mbed-tls-nightly-tests
     parameters:
     - string:
@@ -105,7 +105,7 @@
       - git:
           branches:
           - '*/master'
-          credentials-id: lsandov1-username-github-token
+          credentials-id: lsandov1-github-mbedtls-test-token
           url: https://github.com/lsandov1/mbedtls-test.git
       script-path: vars/mbedtls-release-Jenkinsfile
     project-type: pipeline
@@ -120,3 +120,13 @@
         artifact-num-to-keep: -1
         days-to-keep: 60
         num-to-keep: 100
+    - inject:
+        enabled: true
+        keep-build-variables: true
+        keep-system-variables: true
+        load-from-master: false
+        override-build-parameters: false
+        properties-content: GIT_CREDENTIALS_ID=lsandov1-github-mbedtls-token
+    triggers:
+    - parameterized-timer:
+        cron: "H(0-29) 20 * * * %MBED_TLS_BRANCH=development \nH(0-29) 20 * * * %MBED_TLS_BRANCH=development_2.x \nH(0-29) 20 * * * %MBED_TLS_BRANCH=mbedtls-2.16"
